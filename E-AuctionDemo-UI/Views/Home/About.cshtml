@@ -1,0 +1,18 @@
+﻿@using E_Auction.Core.ViewModels
+@model IEnumerable<AuctionInfoVm>
+
+@{
+    ViewBag.Title = "About";
+}
+
+@{
+    foreach (var item in Model)
+    {
+        <h2>@item.AuctionName</h2>
+        <h3>@item.CreatedByOrganization</h3>
+        <h4>@item.BidsTotalAmount</h4>
+    }
+}
+
+
+<p>Use this area to provide additional information.</p>

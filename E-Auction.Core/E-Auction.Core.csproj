@@ -66,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\AuctionDetailedInfoVm.cs" />
     <Compile Include="ViewModels\AuctionsInfoVm.cs" />
+    <Compile Include="ViewModels\ChangePasswordVm.cs" />
     <Compile Include="ViewModels\FinishAuctionVm.cs" />
     <Compile Include="ViewModels\MakeBidVm.cs" />
     <Compile Include="ViewModels\OpenAuctionRequestVm.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="ViewModels\RegisterEmployeeVm.cs" />
     <Compile Include="ViewModels\SelectAuctionWinnerVm.cs" />
     <Compile Include="ViewModels\TransactionVm.cs" />
+    <Compile Include="ViewModels\UserLogOnVm.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

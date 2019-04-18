@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace E_Auction.Core.ViewModels
 {
-    public class RateOrganizationVm
+    public class UserLogOnVm
     {
-        public int OrganizationId { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
 
-        public int AuctionId { get; set; }
-
-        public int Point { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace E_Auction.ClientUI
             string path = @"D:\Академия шаг\ADO.NET\Пример.txt";
             
             //AplicationDbContext dbContext = new AplicationDbContext();
-            AuctionManagementService service = new AuctionManagementService();
+            //AuctionManagementService service = new AuctionManagementService();
             //service.OpenAuction(new OpenAuctionRequestVm()
             //{
             //    AuctionCategory = "Техника",
@@ -79,22 +79,46 @@ namespace E_Auction.ClientUI
             //Console.ReadLine();
 
             OrganizationManagementService org = new OrganizationManagementService();
-            org.OpenOrganization(new OpenOrganizationRequestVm()
-            {
-                FullName = "Казахтелеком",
-                IdentificationNumber = "123456",
-                OrganizationType = "АО",
-                DirectorFirstName = "Бахыт",
-                DirectorLastName = "Султанов",
-                DirectorEmail = "baha@mail.ru",
-                DirectorDoB = DateTime.Now.AddYears(-28),
-                Password = "12345",
-                PasswordConfirm = "12345"
-            });
+            //org.OpenOrganization(new OpenOrganizationRequestVm()
+            //{
+            //    FullName = "Казахтелеком",
+            //    IdentificationNumber = "123456",
+            //    OrganizationType = "АО",
+            //    DirectorFirstName = "Бахыт",
+            //    DirectorLastName = "Султанов",
+            //    DirectorEmail = "baha@mail.ru",
+            //    DirectorDoB = DateTime.Now.AddYears(-28),
+            //    Password = "12345",
+            //    PasswordConfirm = "12345"
+            //});
+
             //org.RateOrganization(new RateOrganizationVm()
             //{
+            //    OrganizationId = 1,
+            //    Point = 4,
+            //    AuctionId = 1
+            //});
+
+            //org.PerformTransaction(new TransactionVm()
+            //{
+            //    Description="Пополнение счета",
             //    OrganizationId=1,
-            //    Point=4
+            //    Sum=600000,
+            //    TransactionType=TransactionType.Deposit
+            //});
+
+            ApplicationUserService service = new ApplicationUserService();
+            //service.ValidateUserInLogIn(new UserLogOnVm()
+            //{
+            //    Email= "baha@mail.ru",
+            //    Password = "123"
+            //});
+            //service.ChangeUserPassword(new ChangePasswordVm()
+            //{
+            //    UserEmail = "baha@mail.ru",
+            //    UserPassword="123",
+            //    UserNewPassword="12345",
+            //    UserNewPasswordConfirmed="12345"
             //});
         }
     }

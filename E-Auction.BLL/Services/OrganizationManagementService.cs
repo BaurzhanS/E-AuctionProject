@@ -39,6 +39,15 @@ namespace E_Auction.BLL.Services
             if (checkOrganizationType == null)
                 throw new Exception("Организационно-правовая форма организации не корректна");
 
+
+            var Position = _aplicationDbContext.EmployeePositions.SingleOrDefault(p => p.PositionName == "Director");
+            if(Position==null)
+                throw new Exception("Данной должности не имеется в списке должностей");
+
+            var UserExists = _identityDbContext.ApplicationUsers.SingleOrDefault(p => p.Email == model.DirectorEmail);
+            if(UserExists!=null)
+                throw new Exception("Пользователь с данным мэйлом уже существует");
+
             Organization organization = new Organization()
             {
                 FullName = model.FullName,
@@ -48,10 +57,6 @@ namespace E_Auction.BLL.Services
             };
             _aplicationDbContext.Organizations.Add(organization);
             _aplicationDbContext.SaveChanges();
-
-            var Position = _aplicationDbContext.EmployeePositions.SingleOrDefault(p => p.PositionName == "Director");
-            if(Position==null)
-                throw new Exception("Данной должности не имеется в списке должностей");
 
             Employee employee = new Employee()
             {
@@ -108,12 +113,19 @@ namespace E_Auction.BLL.Services
             if (organizationExists == null)
                 throw new Exception("Организации с таким номером не имеется");
 
-            //var rateCheck= _aplicationDbContext.OrganizationRatings.SingleOrDefault(p=>p.OrganizationId==model.OrganizationId
-            //    && p.Point)
+            var auctionExists = _aplicationDbContext.Auctions.SingleOrDefault(p => p.Id == model.AuctionId);
+            if (auctionExists == null)
+                throw new Exception("Аукциона с таким номером не имеется");
+
+            var rateExists = _aplicationDbContext.OrganizationRatings.SingleOrDefault(p => p.OrganizationId == model.OrganizationId
+                 && p.AuctionId==model.AuctionId);
+            if (rateExists != null)
+                throw new Exception("Данная организация уже имеет рейтинг по выбранному аукциону");
 
             OrganizationRating organizationRating = new OrganizationRating()
             {
                 OrganizationId=model.OrganizationId,
+                AuctionId=model.AuctionId,
                 Point=model.Point
             };
             _aplicationDbContext.OrganizationRatings.Add(organizationRating);
@@ -134,7 +146,8 @@ namespace E_Auction.BLL.Services
                 TransactionType=model.TransactionType,
                 Description=model.Description
             };
-
+            _aplicationDbContext.Transactions.Add(transaction);
+            _aplicationDbContext.SaveChanges();
         }
 
         public OrganizationManagementService()

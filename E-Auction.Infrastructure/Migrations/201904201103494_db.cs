@@ -3,7 +3,7 @@ namespace E_Auction.Infrastructure.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class create : DbMigration
+    public partial class db : DbMigration
     {
         public override void Up()
         {
@@ -36,10 +36,8 @@ namespace E_Auction.Infrastructure.Migrations
                         OrganizationId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Organizations", t => t.OrganizationId, cascadeDelete: true)
                 .ForeignKey("dbo.AuctionCategories", t => t.AuctionCategoryId, cascadeDelete: true)
-                .Index(t => t.AuctionCategoryId)
-                .Index(t => t.OrganizationId);
+                .Index(t => t.AuctionCategoryId);
             
             CreateTable(
                 "dbo.AuctionWinners",
@@ -169,6 +167,19 @@ namespace E_Auction.Infrastructure.Migrations
                 .Index(t => t.EmployeePositionId)
                 .Index(t => t.OrganizationId);
             
+            CreateTable(
+                "dbo.OrganizationsAuctions",
+                c => new
+                    {
+                        OrganizationId = c.Int(nullable: false),
+                        AuctionId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => new { t.OrganizationId, t.AuctionId })
+                .ForeignKey("dbo.Organizations", t => t.OrganizationId, cascadeDelete: true)
+                .ForeignKey("dbo.Auctions", t => t.AuctionId, cascadeDelete: true)
+                .Index(t => t.OrganizationId)
+                .Index(t => t.AuctionId);
+            
         }
         
         public override void Down()
@@ -185,7 +196,10 @@ namespace E_Auction.Infrastructure.Migrations
             DropForeignKey("dbo.OrganizationRatings", "OrganizationId", "dbo.Organizations");
             DropForeignKey("dbo.Bids", "OrganizationId", "dbo.Organizations");
             DropForeignKey("dbo.AuctionWinners", "OrganizationId", "dbo.Organizations");
-            DropForeignKey("dbo.Auctions", "OrganizationId", "dbo.Organizations");
+            DropForeignKey("dbo.OrganizationsAuctions", "AuctionId", "dbo.Auctions");
+            DropForeignKey("dbo.OrganizationsAuctions", "OrganizationId", "dbo.Organizations");
+            DropIndex("dbo.OrganizationsAuctions", new[] { "AuctionId" });
+            DropIndex("dbo.OrganizationsAuctions", new[] { "OrganizationId" });
             DropIndex("dbo.Employees", new[] { "OrganizationId" });
             DropIndex("dbo.Employees", new[] { "EmployeePositionId" });
             DropIndex("dbo.AuctionFileMetas", new[] { "AuctionId" });
@@ -197,8 +211,8 @@ namespace E_Auction.Infrastructure.Migrations
             DropIndex("dbo.Organizations", new[] { "OrganizationTypeId" });
             DropIndex("dbo.AuctionWinners", new[] { "OrganizationId" });
             DropIndex("dbo.AuctionWinners", new[] { "Id" });
-            DropIndex("dbo.Auctions", new[] { "OrganizationId" });
             DropIndex("dbo.Auctions", new[] { "AuctionCategoryId" });
+            DropTable("dbo.OrganizationsAuctions");
             DropTable("dbo.Employees");
             DropTable("dbo.EmployeePositions");
             DropTable("dbo.AuctionFileMetas");

@@ -60,6 +60,7 @@
     <Compile Include="DataModels\Employee.cs" />
     <Compile Include="DataModels\Organization.cs" />
     <Compile Include="DataModels\OrganizationRating.cs" />
+    <Compile Include="DataModels\OrganizationsAuctions.cs" />
     <Compile Include="DataModels\Transaction.cs" />
     <Compile Include="Exceptions\OpenAuctionProcessException.cs" />
     <Compile Include="External\GeoLocationInfo.cs" />
@@ -67,7 +68,7 @@
     <Compile Include="ViewModels\AuctionDetailedInfoVm.cs" />
     <Compile Include="ViewModels\AuctionsInfoVm.cs" />
     <Compile Include="ViewModels\ChangePasswordVm.cs" />
-    <Compile Include="ViewModels\FinishAuctionVm.cs" />
+    <Compile Include="ViewModels\FilterOrganizationsForAuctionVm.cs" />
     <Compile Include="ViewModels\MakeBidVm.cs" />
     <Compile Include="ViewModels\OpenAuctionRequestVm.cs" />
     <Compile Include="ViewModels\OpenOrganizationRequestVm.cs" />

@@ -41,11 +41,11 @@ namespace E_Auction.BLL.Services
 
 
             var Position = _aplicationDbContext.EmployeePositions.SingleOrDefault(p => p.PositionName == "Director");
-            if(Position==null)
+            if (Position == null)
                 throw new Exception("Данной должности не имеется в списке должностей");
 
             var UserExists = _identityDbContext.ApplicationUsers.SingleOrDefault(p => p.Email == model.DirectorEmail);
-            if(UserExists!=null)
+            if (UserExists != null)
                 throw new Exception("Пользователь с данным мэйлом уже существует");
 
             Organization organization = new Organization()
@@ -84,7 +84,7 @@ namespace E_Auction.BLL.Services
             ApplicationUserPasswordHistory userPasswordHistory = new ApplicationUserPasswordHistory()
             {
                 SetupDate = DateTime.Now,
-                InvalidatedDate= DateTime.Now.AddMonths(3),
+                InvalidatedDate = DateTime.Now.AddMonths(3),
                 Password = model.Password,
                 ApplicationUserId = user.Id
             };
@@ -118,15 +118,15 @@ namespace E_Auction.BLL.Services
                 throw new Exception("Аукциона с таким номером не имеется");
 
             var rateExists = _aplicationDbContext.OrganizationRatings.SingleOrDefault(p => p.OrganizationId == model.OrganizationId
-                 && p.AuctionId==model.AuctionId);
+                 && p.AuctionId == model.AuctionId);
             if (rateExists != null)
                 throw new Exception("Данная организация уже имеет рейтинг по выбранному аукциону");
 
             OrganizationRating organizationRating = new OrganizationRating()
             {
-                OrganizationId=model.OrganizationId,
-                AuctionId=model.AuctionId,
-                Point=model.Point
+                OrganizationId = model.OrganizationId,
+                AuctionId = model.AuctionId,
+                Point = model.Point
             };
             _aplicationDbContext.OrganizationRatings.Add(organizationRating);
             _aplicationDbContext.SaveChanges();
@@ -140,14 +140,64 @@ namespace E_Auction.BLL.Services
 
             Transaction transaction = new Transaction()
             {
-                OrganizationId=model.OrganizationId,
-                Sum=model.Sum,
-                TransactionDate=DateTime.Now,
-                TransactionType=model.TransactionType,
-                Description=model.Description
+                OrganizationId = model.OrganizationId,
+                Sum = model.Sum,
+                TransactionDate = DateTime.Now,
+                TransactionType = model.TransactionType,
+                Description = model.Description
             };
             _aplicationDbContext.Transactions.Add(transaction);
             _aplicationDbContext.SaveChanges();
+        }
+
+
+        public List<Organization> GetFilteredOrganizationsForAuction(FilterOrganizationsForAuctionVm model)
+        {
+            var OrganizationsBalance = from organization in _aplicationDbContext.Organizations
+                                       from auction in organization.Auctions
+                                       where auction.Id == model.AuctionId
+                                       select new
+                                       {
+                                           OrganizationId = organization.Id,
+                                           OrganizationName = organization.FullName,
+                                           Balance = organization.Transactions.Where(p => p.TransactionType == TransactionType.Deposit).Sum(s => s.Sum)
+                                             - organization.Transactions.Where(p => p.TransactionType == TransactionType.Withdraw).Sum(s => s.Sum),
+                                           AuctionId = auction.Id
+                                       };
+
+            var OrganizationsFilteredByBalance = OrganizationsBalance.Where(p => p.Balance >= model.RequiredMinimumAccountBalance);
+
+            var OrganizationsRating = from organization in _aplicationDbContext.Organizations
+                                      from rating in organization.OrganizationRatings
+                                      where rating.Point >= model.RequiredMinimumOrganizationRating
+                                      && rating.AuctionId == model.AuctionId
+                                      select new
+                                      {
+                                          Id = organization.Id,
+                                          FullName = organization.FullName
+                                      };
+
+           var Organizations =  from orgByBalance in OrganizationsFilteredByBalance
+                                from orgByRating in OrganizationsRating
+                                where orgByBalance.OrganizationId == orgByRating.Id
+                                select new
+                                {
+                                    Id = orgByBalance.OrganizationId,
+                                    FullName = orgByBalance.OrganizationName
+                                };
+
+            var FilteredOrganizations = new List<Organization>();
+
+            foreach (var item in Organizations)
+            {
+                FilteredOrganizations.Add(new Organization()
+                {
+                    Id=item.Id,
+                    FullName=item.FullName
+                });
+            }
+
+            return FilteredOrganizations;
         }
 
         public OrganizationManagementService()

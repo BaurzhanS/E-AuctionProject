@@ -36,8 +36,10 @@ namespace E_Auction.Core.DataModels
 
         #region Navigation Properties
         public int OrganizationId { get; set; }
-        public virtual Organization Organization { get; set; }
+        //public virtual Organization Organization { get; set; }
         public virtual AuctionCategory Category { get; set; }
+
+        public virtual ICollection<Organization> Organizations { get; set; }
         public virtual ICollection<Bid> Bids { get; set; }
         public virtual ICollection<AuctionFileMeta> Files { get; set; }
         public virtual ICollection<OrganizationRating> OrganizationRatings { get; set; }
@@ -50,6 +52,7 @@ namespace E_Auction.Core.DataModels
             Files = new List<AuctionFileMeta>();
             Bids = new List<Bid>();
             OrganizationRatings = new List<OrganizationRating>();
+            Organizations = new List<Organization>();
         }
     }
 

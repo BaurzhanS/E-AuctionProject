@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using E_Auction.Core.DataModels;
 
 namespace E_Auction.Core.ViewModels
 {
-    public class FinishAuctionVm
+    public class FilterOrganizationsForAuctionVm
     {
         public int AuctionId { get; set; }
-        public AuctionStatus AuctionStatus { get; set; }
-        public DateTime? FinishDateActual { get; set; }
+        public decimal RequiredMinimumAccountBalance { get; set; }
+        public int RequiredMinimumOrganizationRating { get; set; }
     }
 }

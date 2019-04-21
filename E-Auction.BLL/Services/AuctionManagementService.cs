@@ -63,28 +63,6 @@ namespace E_Auction.BLL.Services
             _aplicationDbContext.Auctions.Add(auction);
             _aplicationDbContext.SaveChanges();
 
-            List<AuctionFileMeta> auctionFiles = new List<AuctionFileMeta>();
-
-            //if (model.UploadFiles.Count != 0)
-            //{
-            //    foreach (HttpPostedFileBase i in model.UploadFiles)
-            //    {
-            //        AuctionFileMeta file = new AuctionFileMeta();
-            //        byte[] fileData = null;
-
-            //        using (var binaryReader = new BinaryReader(i.InputStream))
-            //        {
-            //            fileData = binaryReader.ReadBytes(i.ContentLength);
-            //        }
-
-            //        file.FileName = i.FileName;
-            //        file.Extension = i.ContentType;
-            //        file.ContentAsBase64 = fileData;
-            //        file.CreatedAt = DateTime.Now;
-            //        _aplicationDbContext.AuctionFileMeta.Add(file);
-            //    }
-            //    _aplicationDbContext.SaveChanges();
-            //}
         }
 
         public void MakeBidToAuction(MakeBidVm model)
@@ -107,7 +85,6 @@ namespace E_Auction.BLL.Services
         
             var organizationWithdrawals = _aplicationDbContext.Transactions.Where(p => p.OrganizationId == model.OrganizationId && p.TransactionType == TransactionType.Withdraw).ToList();
               
-            
             var organizationBalance = organizationDeposits.Sum(p=>p.Sum) - organizationWithdrawals.Sum(p => p.Sum);
             if(organizationBalance<model.Price)
                 throw new Exception($"У организации {_aplicationDbContext.Organizations.SingleOrDefault(p=>p.Id==model.OrganizationId).FullName} не хватает средств на балансе");
@@ -158,6 +135,15 @@ namespace E_Auction.BLL.Services
             else
             {
                 bidExists.BidStatus = BidStatus.Revoked;
+                Transaction deposit = new Transaction()
+                {
+                    Description = "Пополение за отзыв заявки",
+                    OrganizationId = bidExists.OrganizationId,
+                    Sum = bidExists.Price,
+                    TransactionDate = DateTime.Now,
+                    TransactionType = TransactionType.Deposit
+                };
+
                 _aplicationDbContext.SaveChanges();
             }
         }
@@ -172,7 +158,7 @@ namespace E_Auction.BLL.Services
                     AuctionName = p.Description,
                     BidsCount = p.Bids.Count,
                     BidsTotalAmount = p.Bids.Sum(s=>s.Price),
-                    CreatedByOrganization = p.Organization.FullName
+                    CreatedByOrganization = p.Organizations.FirstOrDefault().FullName
                 });
 
             return auctions.ToList();
@@ -190,7 +176,7 @@ namespace E_Auction.BLL.Services
                 AuctionId=auction.Id,
                 AuctionType=auction.Category.Name,
                 AuctionStatus=auction.AuctionStatus.ToString(),
-                OrganizationName=auction.Organization.FullName,
+                OrganizationName=auction.Organizations.FirstOrDefault().FullName,
                 StartDate=auction.StartDate,
                 StartPrice=auction.PriceAtStart,
                 MinPrice=auction.PriceAtMinimum,
@@ -225,16 +211,10 @@ namespace E_Auction.BLL.Services
                 CreatedAt=DateTime.Now
             };
             _aplicationDbContext.AuctionWinners.Add(winner);
-            _aplicationDbContext.SaveChanges();
-        }
 
-        public void FinishAuction(FinishAuctionVm model)
-        {
-            var auction = _aplicationDbContext.Auctions.SingleOrDefault(p => p.Id == model.AuctionId);
-            if (auction == null)
-                throw new Exception("Аукциона с таким номером не имеется");
-            auction.FinishDateActual = model.FinishDateActual;
-            auction.AuctionStatus = AuctionStatus.Finished;
+            auctionExists.FinishDateActual = model.CreatedDate;
+            auctionExists.AuctionStatus = AuctionStatus.Finished;
+
             _aplicationDbContext.SaveChanges();
         }
 

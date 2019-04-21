@@ -24,11 +24,11 @@ namespace E_Auction.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder
-                .Entity<Organization>()
-                .HasMany(p => p.Auctions)
-                .WithRequired(p => p.Organization)
-                .HasForeignKey(p => p.OrganizationId);
+            //modelBuilder
+            //    .Entity<Organization>()
+            //    .HasMany(p => p.Auctions)
+            //    .WithRequired(p => p.Organization)
+            //    .HasForeignKey(p => p.OrganizationId);
 
             modelBuilder
                 .Entity<Organization>()
@@ -49,6 +49,14 @@ namespace E_Auction.Infrastructure
                 .HasMany(p => p.OrganizationRatings)
                 .WithRequired(p => p.Organization)
                 .HasForeignKey(p => p.OrganizationId);
+
+            modelBuilder
+                .Entity<Organization>()
+                .HasMany(p => p.Auctions)
+                .WithMany(p => p.Organizations)
+                .Map(m => m.ToTable("OrganizationsAuctions")
+                .MapLeftKey("OrganizationId")
+                .MapRightKey("AuctionId"));
 
             modelBuilder
                 .Entity<Auction>()

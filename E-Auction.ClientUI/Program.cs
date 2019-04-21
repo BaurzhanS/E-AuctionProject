@@ -20,8 +20,9 @@ namespace E_Auction.ClientUI
         static void Main(string[] args)
         {
             string path = @"D:\Академия шаг\ADO.NET\Пример.txt";
-            
+
             //AplicationDbContext dbContext = new AplicationDbContext();
+
             //AuctionManagementService service = new AuctionManagementService();
             //service.OpenAuction(new OpenAuctionRequestVm()
             //{
@@ -92,6 +93,19 @@ namespace E_Auction.ClientUI
             //    PasswordConfirm = "12345"
             //});
 
+            var list = org.GetFilteredOrganizationsForAuction(new FilterOrganizationsForAuctionVm()
+            {
+                AuctionId = 1,
+                RequiredMinimumAccountBalance = 200000,
+                RequiredMinimumOrganizationRating = 4
+            });
+
+
+            foreach (var item in list)
+            {
+                Console.WriteLine(item.Id);
+            }
+
             //org.RateOrganization(new RateOrganizationVm()
             //{
             //    OrganizationId = 1,
@@ -107,7 +121,7 @@ namespace E_Auction.ClientUI
             //    TransactionType=TransactionType.Deposit
             //});
 
-            ApplicationUserService service = new ApplicationUserService();
+            //ApplicationUserService service = new ApplicationUserService();
             //service.ValidateUserInLogIn(new UserLogOnVm()
             //{
             //    Email= "baha@mail.ru",
@@ -120,6 +134,8 @@ namespace E_Auction.ClientUI
             //    UserNewPassword="12345",
             //    UserNewPasswordConfirmed="12345"
             //});
+
+
         }
     }
 }

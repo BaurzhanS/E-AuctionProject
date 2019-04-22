@@ -7,13 +7,13 @@ namespace E_Auction.Infrastructure.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class db : IMigrationMetadata
+    public sealed partial class update : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(db));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(update));
         
         string IMigrationMetadata.Id
         {
-            get { return "201904201103494_db"; }
+            get { return "201904220921103_update"; }
         }
         
         string IMigrationMetadata.Source

@@ -15,11 +15,11 @@ namespace E_AuctionDemo_UI.Controllers
             return View();
         }
 
-        public ActionResult About()
-        {
-            var auctionInfo = service.GetAuctionInfo();
-            return View(auctionInfo);
-        }
+        //public ActionResult About()
+        //{
+        //    //var auctionInfo = service.GetAuctionsInfo;
+        //   // return View(auctionInfo);
+        //}
 
         public ActionResult Contact()
         {

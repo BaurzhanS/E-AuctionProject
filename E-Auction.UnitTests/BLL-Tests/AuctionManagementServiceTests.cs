@@ -31,8 +31,12 @@ namespace E_Auction.UnitTests.BLL_Tests
                     new Organization()
                     {
                         FullName = "Жамантелеком",
-                        IdentificationNumber = "-1",
-                        RegistrationDate = DateTime.Now
+                        IdentificationNumber = "1233",
+                        RegistrationDate = DateTime.Now,
+                        PhoneNumber="870123345",
+                        Address="Сейф",
+                        LinkToWebsite="www.google.com",
+                        OrganizationEmail="baur@mail.ru"
                     }
                 }
             };
@@ -63,12 +67,14 @@ namespace E_Auction.UnitTests.BLL_Tests
                             new Bid()
                             {
                                 BidStatus = BidStatus.Active,
-                                OrganizationId = dbContext.Organizations.First().Id,
+                                OrganizationId = dbContext.Organizations.First(p=>p.FullName=="Жамантелеком").Id,
                                 Price = 100000,
                                 CreatedDate = DateTime.Now.AddHours(-5),
+                                AuctionId=dbContext.Auctions.First(p=>p.Description=="Тестовый аукцион").Id,
                                 Description = "Доставим!"
                             }
                         }
+                        
                     }
                 }
             };

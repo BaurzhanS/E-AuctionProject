@@ -21,7 +21,9 @@ namespace E_Auction.BLL.Services
                 throw new Exception("Пользователь с таким мэйлом отсутствует в системе");
 
             var passwordCheck = _identityDbContext.ApplicationUserPasswordHistories
-                .SingleOrDefault(p => p.ApplicationUserId == userExists.Id && p.Password == model.Password);
+                .Where(p => p.Password == model.Password && p.ApplicationUserId == userExists.Id)
+                .OrderByDescending(p => p.SetupDate).Take(1);
+
             if (passwordCheck == null)
             {
                 userExists.FailedSignInCount++;
@@ -29,7 +31,7 @@ namespace E_Auction.BLL.Services
                 throw new Exception("У данного пользователя другой пароль");
             }
 
-            var FailedSignInCount = _identityDbContext.ApplicationUsers.SingleOrDefault(p=>p.Email==model.Email).FailedSignInCount;
+            var FailedSignInCount = _identityDbContext.ApplicationUsers.SingleOrDefault(p => p.Email == model.Email).FailedSignInCount;
 
             if (FailedSignInCount > 5)
             {
@@ -38,16 +40,17 @@ namespace E_Auction.BLL.Services
             }
             var invalidatedDateCheck = _identityDbContext.ApplicationUserPasswordHistories
                 .Where(p => p.ApplicationUser.Email == model.Email && p.Password == model.Password)
-                .OrderByDescending(p => p.SetupDate).ToList();
-            if (invalidatedDateCheck[0].InvalidatedDate <= DateTime.Now)
+                .OrderByDescending(p => p.SetupDate).Take(1);
+
+            if (invalidatedDateCheck.FirstOrDefault().InvalidatedDate <= DateTime.Now)
             {
                 userExists.IsActive = false;
-                throw new Exception("Истекла валидная дата для данного пароля");
                 _identityDbContext.SaveChanges();
+                throw new Exception("Истекла валидная дата для данного пароля");
             }
 
 
-            var validUser = _identityDbContext.ApplicationUsers.SingleOrDefault(p =>p.Id==userExists.Id && (p.IsActive == true));
+            var validUser = _identityDbContext.ApplicationUsers.SingleOrDefault(p => p.Id == userExists.Id && (p.IsActive == true));
             if (validUser == null)
                 throw new Exception("Данный пользователь заблокирован");
 
@@ -60,11 +63,11 @@ namespace E_Auction.BLL.Services
             {
                 ApplicationUserId = validUser.Id,
                 IpToGeoCity = geoInfo.city,
-                IpToGeoLatitude=geoInfo.latitude,
-                IpToGeoCountry=geoInfo.country_name,
-                IpToGeoLongitude=geoInfo.longitude,
-                MachineIp=geoInfo.ip,
-                SignInTime=DateTime.Now
+                IpToGeoLatitude = geoInfo.latitude,
+                IpToGeoCountry = geoInfo.country_name,
+                IpToGeoLongitude = geoInfo.longitude,
+                MachineIp = geoInfo.ip,
+                SignInTime = DateTime.Now
             };
 
             _identityDbContext.ApplicationUserSignInHistories.Add(userSignInHistory);
@@ -73,40 +76,38 @@ namespace E_Auction.BLL.Services
 
         public void ChangeUserPassword(ChangePasswordVm model)
         {
+            var userExists = _identityDbContext.ApplicationUsers.SingleOrDefault(p => p.Email == model.UserEmail);
+            if (userExists == null)
+                throw new Exception("Пользователь с таким мэйлом отсутствует в системе");
+
             var passwordCheck = _identityDbContext.ApplicationUserPasswordHistories
-                .SingleOrDefault(p => p.ApplicationUser.Email == model.UserEmail && p.Password == model.UserPassword);
-            if(passwordCheck==null)
+                .Where(p => p.Password == model.UserPassword && p.ApplicationUserId == userExists.Id)
+                .OrderByDescending(p => p.SetupDate).Take(1);
+
+            if (passwordCheck == null)
                 throw new Exception("Неправильный пароль");
 
             var userPasswordHistory = _identityDbContext.ApplicationUserPasswordHistories
-                .Where(p => p.ApplicationUser.Email == model.UserEmail).ToList();
+                .Where(p => p.ApplicationUser.Email == model.UserEmail).OrderByDescending(p => p.SetupDate).Take(5);
 
-            bool flag = true;
-            if (userPasswordHistory.Count() < 5)
+            bool passwordValidationCheck = true;
+
+            foreach (var item in userPasswordHistory)
             {
-                foreach (var item in userPasswordHistory)
-                {
-                    if (item.Password == model.UserNewPassword)
-                        flag = false;
-                }
+                if (item.Password == model.UserNewPassword)
+                    passwordValidationCheck = false;
             }
-            else
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    if(userPasswordHistory[i].Password== model.UserNewPassword)
-                        flag = false;
-                }
-            }
-            if(!flag)
+
+
+            if (!passwordValidationCheck)
                 throw new Exception("Данный пароль уже использовался выберите другой");
 
-            if(model.UserNewPassword!=model.UserNewPasswordConfirmed)
+            if (model.UserNewPassword != model.UserNewPasswordConfirmed)
                 throw new Exception("Новый пароль не соответствует подтвержденному");
 
             ApplicationUserPasswordHistory ApplicationUserPasswordHistory = new ApplicationUserPasswordHistory()
             {
-                ApplicationUserId = userPasswordHistory[0].ApplicationUser.Id,
+                ApplicationUserId = userExists.Id,
                 Password = model.UserNewPassword,
                 SetupDate = DateTime.Now,
                 InvalidatedDate = DateTime.Now.AddMonths(3)
@@ -119,7 +120,7 @@ namespace E_Auction.BLL.Services
 
             if (userIsActive != null)
                 userIsActive.IsActive = true;
-            
+
             _identityDbContext.SaveChanges();
         }
 

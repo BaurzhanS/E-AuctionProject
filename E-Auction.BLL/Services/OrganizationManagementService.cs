@@ -53,7 +53,11 @@ namespace E_Auction.BLL.Services
                 FullName = model.FullName,
                 IdentificationNumber = model.IdentificationNumber,
                 RegistrationDate = DateTime.Now,
-                OrganizationTypeId = checkOrganizationType.Id
+                OrganizationTypeId = checkOrganizationType.Id,
+                OrganizationEmail = model.OrganizationEmail,
+                PhoneNumber = model.PhoneNumber,
+                LinkToWebsite = model.LinkToWebsite,
+                Address = model.Address,
             };
             _aplicationDbContext.Organizations.Add(organization);
             _aplicationDbContext.SaveChanges();
@@ -150,6 +154,23 @@ namespace E_Auction.BLL.Services
             _aplicationDbContext.SaveChanges();
         }
 
+        public void UpdateOrganization(UpdateOrganizationVm model)
+        {
+            var organizationExists = _aplicationDbContext.Organizations
+                .SingleOrDefault(p => p.Id == model.OrganizationId || p.IdentificationNumber == model.IdentificationNumber);
+            if (organizationExists == null)
+                throw new Exception("Организации с таким номером не имеется");
+
+            organizationExists.FullName = model.FullName;
+            organizationExists.IdentificationNumber = model.IdentificationNumber;
+            organizationExists.OrganizationEmail = model.OrganizationEmail;
+            organizationExists.PhoneNumber = model.PhoneNumber;
+            organizationExists.Address = model.Address;
+            organizationExists.LinkToWebsite = model.LinkToWebsite;
+
+            _aplicationDbContext.SaveChanges();
+
+        }
 
         public List<Organization> GetFilteredOrganizationsForAuction(FilterOrganizationsForAuctionVm model)
         {
@@ -177,7 +198,7 @@ namespace E_Auction.BLL.Services
                                           FullName = organization.FullName
                                       };
 
-           var Organizations =  from orgByBalance in OrganizationsFilteredByBalance
+            var Organizations = from orgByBalance in OrganizationsFilteredByBalance
                                 from orgByRating in OrganizationsRating
                                 where orgByBalance.OrganizationId == orgByRating.Id
                                 select new
@@ -192,12 +213,26 @@ namespace E_Auction.BLL.Services
             {
                 FilteredOrganizations.Add(new Organization()
                 {
-                    Id=item.Id,
-                    FullName=item.FullName
+                    Id = item.Id,
+                    FullName = item.FullName
                 });
             }
 
             return FilteredOrganizations;
+        }
+
+        public void CreateOrganizationType(OrganizationTypeVm model)
+        {
+            var organizationTypeCheck = _aplicationDbContext.OrganizationTypes.FirstOrDefault(p => p.Name == model.Name);
+            if (organizationTypeCheck != null)
+                throw new Exception("Такая форма организации уже имеется");
+
+            OrganizationType OrganizationType = new OrganizationType()
+            {
+                Name = model.Name
+            };
+            _aplicationDbContext.OrganizationTypes.Add(OrganizationType);
+            _aplicationDbContext.SaveChanges();
         }
 
         public OrganizationManagementService()

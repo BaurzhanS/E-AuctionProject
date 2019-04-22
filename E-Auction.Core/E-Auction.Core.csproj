@@ -72,10 +72,12 @@
     <Compile Include="ViewModels\MakeBidVm.cs" />
     <Compile Include="ViewModels\OpenAuctionRequestVm.cs" />
     <Compile Include="ViewModels\OpenOrganizationRequestVm.cs" />
+    <Compile Include="ViewModels\OrganizationTypeVm.cs" />
     <Compile Include="ViewModels\RateOrganizationVm.cs" />
     <Compile Include="ViewModels\RegisterEmployeeVm.cs" />
     <Compile Include="ViewModels\SelectAuctionWinnerVm.cs" />
     <Compile Include="ViewModels\TransactionVm.cs" />
+    <Compile Include="ViewModels\UpdateOrganizationVm.cs" />
     <Compile Include="ViewModels\UserLogOnVm.cs" />
   </ItemGroup>
   <ItemGroup>

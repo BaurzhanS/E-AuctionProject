@@ -19,7 +19,7 @@ namespace E_Auction.ClientUI
     {
         static void Main(string[] args)
         {
-            string path = @"D:\Академия шаг\ADO.NET\Пример.txt";
+            //string path = @"D:\Академия шаг\ADO.NET\Пример.txt";
 
             //AplicationDbContext dbContext = new AplicationDbContext();
 
@@ -79,7 +79,7 @@ namespace E_Auction.ClientUI
             //});
             //Console.ReadLine();
 
-            OrganizationManagementService org = new OrganizationManagementService();
+            //OrganizationManagementService org = new OrganizationManagementService();
             //org.OpenOrganization(new OpenOrganizationRequestVm()
             //{
             //    FullName = "Казахтелеком",
@@ -93,18 +93,18 @@ namespace E_Auction.ClientUI
             //    PasswordConfirm = "12345"
             //});
 
-            var list = org.GetFilteredOrganizationsForAuction(new FilterOrganizationsForAuctionVm()
-            {
-                AuctionId = 1,
-                RequiredMinimumAccountBalance = 200000,
-                RequiredMinimumOrganizationRating = 4
-            });
+            //var list = org.GetFilteredOrganizationsForAuction(new FilterOrganizationsForAuctionVm()
+            //{
+            //    AuctionId = 1,
+            //    RequiredMinimumAccountBalance = 200000,
+            //    RequiredMinimumOrganizationRating = 4
+            //});
 
 
-            foreach (var item in list)
-            {
-                Console.WriteLine(item.Id);
-            }
+            //foreach (var item in list)
+            //{
+            //    Console.WriteLine(item.Id);
+            //}
 
             //org.RateOrganization(new RateOrganizationVm()
             //{
@@ -135,6 +135,16 @@ namespace E_Auction.ClientUI
             //    UserNewPasswordConfirmed="12345"
             //});
 
+            //org.UpdateOrganization(new UpdateOrganizationVm
+            //{
+            //    OrganizationId=1,
+            //    FullName="АлмаТВ",
+            //    PhoneNumber="870123345",
+            //    Address="Сейф",
+            //    IdentificationNumber="12344",
+            //    LinkToWebsite="www.google.com",
+            //    OrganizationEmail="baur@mail.ru",
+            //});
 
         }
     }
